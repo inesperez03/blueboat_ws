@@ -10,3 +10,6 @@
 [submodule "src/catamaran_navigator"]
 	path = src/catamaran_navigator
 	url = https://github.com/inesperez03/catamaran_navigator.git
+[submodule "src/blueboat_cirtesu_description"]
+	path = src/blueboat_cirtesu_description
+	url = https://github.com/Mariolopez31/blueboat_cirtesu_description.git
