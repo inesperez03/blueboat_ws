@@ -13,3 +13,6 @@
 [submodule "src/blueboat_cirtesu_description"]
 	path = src/blueboat_cirtesu_description
 	url = https://github.com/Mariolopez31/blueboat_cirtesu_description.git
+[submodule "src/blueboat_stonefish"]
+	path = src/blueboat_stonefish
+	url = https://github.com/Mariolopez31/blueboat_stonefish.git
