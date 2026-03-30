@@ -7,3 +7,6 @@
 [submodule "src/sura_msgs"]
 	path = src/sura_msgs
 	url = https://github.com/inesperez03/sura_msgs.git
+[submodule "src/catamaran_navigator"]
+	path = src/catamaran_navigator
+	url = https://github.com/inesperez03/catamaran_navigator.git
