@@ -25,6 +25,7 @@ thruster_test_controller:
 body_force_controller:
   ros__parameters:
     input_topic: /body_force/command
+    base_link: blueboat/base_link
     thruster_joints:
       - blueboat/left_thruster_joint
       - blueboat/right_thruster_joint
