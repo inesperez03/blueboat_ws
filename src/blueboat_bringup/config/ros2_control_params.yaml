@@ -1,0 +1,41 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 50
+
+    hardware_components_initial_state:
+      inactive:
+        - ThrustersSystem
+
+    thruster_test_controller:
+      type: forward_command_controller/ForwardCommandController
+
+    body_force_controller:
+      type: catamaran_controllers/BodyForceController
+    
+    body_velocity_controller:
+      type: catamaran_controllers/BodyVelocityController
+
+thruster_test_controller:
+  ros__parameters:
+    joints:
+      - left_thruster_joint
+      - right_thruster_joint
+    interface_name: effort
+
+body_force_controller:
+  ros__parameters:
+    input_topic: /body_force/command
+
+body_velocity_controller:
+  ros__parameters:
+    cmd_vel_topic: /cmd_vel
+    navigator_topic: /navigator_msg
+    body_force_controller_name: body_force_controller
+
+    kp_u: 4000.0
+    ki_u: 40.0
+    kd_u: 5.0
+
+    kp_r: 3000.0
+    ki_r: 10.0
+    kd_r: 10.0
