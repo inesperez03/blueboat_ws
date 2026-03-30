@@ -1,0 +1,3 @@
+[submodule "src/catamaran_controllers"]
+	path = src/catamaran_controllers
+	url = https://github.com/inesperez03/catamaran_controllers.git
