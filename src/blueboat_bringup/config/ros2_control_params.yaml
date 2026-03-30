@@ -18,13 +18,16 @@ controller_manager:
 thruster_test_controller:
   ros__parameters:
     joints:
-      - left_thruster_joint
-      - right_thruster_joint
+      - blueboat/left_thruster_joint
+      - blueboat/right_thruster_joint
     interface_name: effort
 
 body_force_controller:
   ros__parameters:
     input_topic: /body_force/command
+    thruster_joints:
+      - blueboat/left_thruster_joint
+      - blueboat/right_thruster_joint
 
 body_velocity_controller:
   ros__parameters:
