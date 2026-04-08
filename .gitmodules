@@ -16,3 +16,6 @@
 [submodule "src/blueboat_stonefish"]
 	path = src/blueboat_stonefish
 	url = https://github.com/Mariolopez31/blueboat_stonefish.git
+[submodule "src/blueboat_sura"]
+	path = src/blueboat_sura
+	url = https://github.com/Mariolopez31/blueboat_sura.git
