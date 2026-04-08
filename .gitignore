@@ -1,4 +1,7 @@
 launch/
 install/
 log/
+build/
+.vscode/
+.codex/
 install/core.*
