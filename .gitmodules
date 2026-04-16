@@ -19,3 +19,6 @@
 [submodule "src/blueboat_sura"]
 	path = src/blueboat_sura
 	url = https://github.com/Mariolopez31/blueboat_sura.git
+[submodule "src/sura_sensors"]
+	path = src/sura_sensors
+	url = https://github.com/inesperez03/sura_sensors.git
