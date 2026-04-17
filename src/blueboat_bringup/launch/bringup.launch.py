@@ -10,7 +10,7 @@ def generate_launch_description():
     environment = LaunchConfiguration("environment")
 
     description_pkg = get_package_share_directory("blueboat_cirtesu_description")
-    hardware_pkg = get_package_share_directory("thrusters_hardware_interface")
+    hardware_pkg = get_package_share_directory("sura_hardware_interface")
     bringup_pkg = get_package_share_directory("blueboat_bringup")
 
     xacro_file = os.path.join(description_pkg, "urdf", "blueboat.xacro")
@@ -55,6 +55,13 @@ def generate_launch_description():
         output="screen"
     )
 
+    imu_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["imu_broadcaster", "--inactive"],
+        output="screen"
+    )
+
     return LaunchDescription([
         DeclareLaunchArgument(
             "environment",
@@ -64,5 +71,6 @@ def generate_launch_description():
         ros2_control_node,
         thruster_test_spawner,
         body_velocity_spawner,
+        imu_broadcaster_spawner,
         body_force_spawner
     ])

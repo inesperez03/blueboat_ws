@@ -5,6 +5,7 @@ controller_manager:
     hardware_components_initial_state:
       inactive:
         - ThrustersSystem
+        - SensorsSystem
 
     thruster_test_controller:
       type: forward_command_controller/ForwardCommandController
@@ -14,6 +15,9 @@ controller_manager:
     
     body_velocity_controller:
       type: catamaran_controllers/BodyVelocityController
+
+    imu_broadcaster:
+      type: imu_sensor_broadcaster/IMUSensorBroadcaster
 
 thruster_test_controller:
   ros__parameters:
@@ -43,3 +47,8 @@ body_velocity_controller:
     kp_r: 3000.0
     ki_r: 10.0
     kd_r: 10.0
+
+imu_broadcaster:
+  ros__parameters:
+    sensor_name: imu_sensor
+    frame_id: blueboat/imu_link
