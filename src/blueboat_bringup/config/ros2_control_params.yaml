@@ -19,6 +19,9 @@ controller_manager:
     imu_broadcaster:
       type: imu_sensor_broadcaster/IMUSensorBroadcaster
 
+    magnetometer_broadcaster:
+      type: sura_sensors/MagnetometerBroadcaster
+
 thruster_test_controller:
   ros__parameters:
     joints:
@@ -52,3 +55,9 @@ imu_broadcaster:
   ros__parameters:
     sensor_name: imu_sensor
     frame_id: blueboat/imu_link
+
+magnetometer_broadcaster:
+  ros__parameters:
+    sensor_name: magnetometer_sensor
+    frame_id: blueboat/imu_link
+    topic_name: /magnetometer_broadcaster/mag

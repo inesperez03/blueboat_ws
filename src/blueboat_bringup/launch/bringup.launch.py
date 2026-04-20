@@ -62,6 +62,13 @@ def generate_launch_description():
         output="screen"
     )
 
+    magnetometer_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["magnetometer_broadcaster", "--inactive"],
+        output="screen"
+    )
+
     return LaunchDescription([
         DeclareLaunchArgument(
             "environment",
@@ -72,5 +79,6 @@ def generate_launch_description():
         thruster_test_spawner,
         body_velocity_spawner,
         imu_broadcaster_spawner,
+        magnetometer_broadcaster_spawner,
         body_force_spawner
     ])
