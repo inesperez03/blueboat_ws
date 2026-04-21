@@ -1,0 +1,53 @@
+{
+  "name": "Blueboat WS ROS2 Humble",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "overrideCommand": true,
+  "command": "bash -lc 'sleep infinity'",
+  "remoteUser": "mario-cirtesu",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/mario-cirtesu/blueboat_ws,type=bind",
+  "workspaceFolder": "/home/mario-cirtesu/blueboat_ws",
+  "runArgs": [
+    "--net=host",
+    "--ipc=host",
+    "--device=/dev/input:/dev/input",
+    "--gpus=all",
+    "--env=DISPLAY",
+    "--env=QT_X11_NO_MITSHM=1",
+    "--env=NVIDIA_VISIBLE_DEVICES=all",
+    "--env=NVIDIA_DRIVER_CAPABILITIES=all",
+    "--env=__GLX_VENDOR_LIBRARY_NAME=nvidia",
+    "--env=__NV_PRIME_RENDER_OFFLOAD=1",
+    "--volume=/tmp/.X11-unix:/tmp/.X11-unix:rw",
+    "--volume=/run/udev:/run/udev:ro",
+    "--env=SDL_GAMECONTROLLER_IGNORE_DEVICES=",
+    "--env=SDL_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT="
+  ],
+  "postCreateCommand": "bash -lc '.devcontainer/postCreate.sh'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-iot.vscode-ros",
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "twxs.cmake",
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        "ms-python.python",
+        "redhat.vscode-xml"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "ros.distro": "humble",
+        "files.associations": {
+          "*.scn": "xml",
+          "*.launch": "xml",
+          "*.xacro": "xml",
+          "*.urdf": "xml"
+        }
+      }
+    }
+  }
+}

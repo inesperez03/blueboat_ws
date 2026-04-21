@@ -43,13 +43,17 @@ body_velocity_controller:
     navigator_topic: /navigator_msg
     body_force_controller_name: body_force_controller
 
-    kp_u: 4000.0
-    ki_u: 40.0
-    kd_u: 5.0
+    # Keep yaw untouched; surge is slightly less filtered now and the
+    # linear loop is tuned to avoid chasing the remaining lag.
+    kp_u: 260.0
+    ki_u: 2.0
+    kd_u: 14.0
+    integral_limit_u: 8.0
 
-    kp_r: 3000.0
-    ki_r: 10.0
-    kd_r: 10.0
+    kp_r: 260.0
+    ki_r: 20.0
+    kd_r: 38.0
+    integral_limit_r: 3.0
 
 imu_broadcaster:
   ros__parameters:

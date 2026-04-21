@@ -1,9 +1,6 @@
 [submodule "src/catamaran_controllers"]
 	path = src/catamaran_controllers
 	url = https://github.com/inesperez03/catamaran_controllers.git
-[submodule "src/thrusters_hardware_interface"]
-	path = src/thrusters_hardware_interface
-	url = https://github.com/inesperez03/thrusters_hardware_interface.git
 [submodule "src/sura_msgs"]
 	path = src/sura_msgs
 	url = https://github.com/inesperez03/sura_msgs.git
@@ -22,3 +19,6 @@
 [submodule "src/sura_sensors"]
 	path = src/sura_sensors
 	url = https://github.com/inesperez03/sura_sensors.git
+[submodule "src/sura_hardware_interface"]
+	path = src/sura_hardware_interface
+	url = https://github.com/inesperez03/sura_hardware_interface.git
