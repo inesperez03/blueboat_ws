@@ -1,13 +1,32 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration, Command
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 import os
+import yaml
+
+
+def _load_thruster_lpf_alpha():
+    params_file = os.path.join(
+        get_package_share_directory("blueboat_bringup"),
+        "config",
+        "ros2_control_params.yaml"
+    )
+    try:
+        with open(params_file, "r", encoding="utf-8") as stream:
+            data = yaml.safe_load(stream) or {}
+        return data.get("thrusters_system", {}).get("ros__parameters", {}).get(
+            "thruster_lpf_alpha", 0.25
+        )
+    except Exception:
+        return 0.25
 
 
 def generate_launch_description():
     environment = LaunchConfiguration("environment")
+    thruster_lpf_alpha = LaunchConfiguration("thruster_lpf_alpha")
+    thruster_lpf_alpha_default = _load_thruster_lpf_alpha()
 
     description_pkg = get_package_share_directory("blueboat_cirtesu_description")
     hardware_pkg = get_package_share_directory("sura_hardware_interface")
@@ -23,6 +42,11 @@ def generate_launch_description():
         " environment:=", environment,
         " lookup_csv:=", csv_file
     ])
+
+    thruster_lpf_alpha_env = SetEnvironmentVariable(
+        name="BLUEBOAT_THRUSTER_LPF_ALPHA",
+        value=thruster_lpf_alpha
+    )
 
     ros2_control_node = Node(
         package="controller_manager",
@@ -62,23 +86,21 @@ def generate_launch_description():
         output="screen"
     )
 
-    magnetometer_broadcaster_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["magnetometer_broadcaster", "--inactive"],
-        output="screen"
-    )
-
     return LaunchDescription([
         DeclareLaunchArgument(
             "environment",
             default_value="real",
             description="Execution environment: real or sim"
         ),
+        DeclareLaunchArgument(
+            "thruster_lpf_alpha",
+            default_value=str(thruster_lpf_alpha_default),
+            description="Low-pass alpha for thruster commands in ThrustersSystem"
+        ),
+        thruster_lpf_alpha_env,
         ros2_control_node,
         thruster_test_spawner,
         body_velocity_spawner,
         imu_broadcaster_spawner,
-        magnetometer_broadcaster_spawner,
         body_force_spawner
     ])

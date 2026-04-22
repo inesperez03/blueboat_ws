@@ -19,8 +19,8 @@ controller_manager:
     imu_broadcaster:
       type: imu_sensor_broadcaster/IMUSensorBroadcaster
 
-    magnetometer_broadcaster:
-      type: sura_sensors/MagnetometerBroadcaster
+    # magnetometer_broadcaster:
+    #   type: sura_sensors/MagnetometerBroadcaster
 
 thruster_test_controller:
   ros__parameters:
@@ -45,23 +45,31 @@ body_velocity_controller:
 
     # Keep yaw untouched; surge is slightly less filtered now and the
     # linear loop is tuned to avoid chasing the remaining lag.
-    kp_u: 260.0
+    kp_u: 180.0
     ki_u: 2.0
-    kd_u: 14.0
-    integral_limit_u: 8.0
+    kd_u: 24.0
+    integral_limit_u: 6.0
 
     kp_r: 260.0
     ki_r: 20.0
     kd_r: 38.0
     integral_limit_r: 3.0
 
+navigator_bridge:
+  ros__parameters:
+    linear_lpf_alpha: 0.35
+
+thrusters_system:
+  ros__parameters:
+    thruster_lpf_alpha: 0.20
+
 imu_broadcaster:
   ros__parameters:
     sensor_name: imu_sensor
     frame_id: blueboat/imu_link
 
-magnetometer_broadcaster:
-  ros__parameters:
-    sensor_name: magnetometer_sensor
-    frame_id: blueboat/imu_link
-    topic_name: /magnetometer_broadcaster/mag
+# magnetometer_broadcaster:
+#   ros__parameters:
+#     sensor_name: magnetometer_sensor
+#     frame_id: blueboat/imu_link
+#     topic_name: /magnetometer_broadcaster/mag
