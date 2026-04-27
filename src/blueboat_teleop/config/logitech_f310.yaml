@@ -22,12 +22,16 @@ blueboat_teleop:
     alternate_mode_modifier_button: -1
     body_force_button: 4
     body_velocity_button: 2
+    body_position_button: 0
     stop_controllers_button: -1
 
     controller_manager_name: /controller_manager
     body_force_controller_name: body_force_controller
     body_velocity_controller_name: body_velocity_controller
+    body_position_controller_name: body_position_controller
     thruster_test_controller_name: thruster_test_controller
+    navigator_topic: /navigator_msg
+    position_setpoint_topic: /body_position/setpoint
 
     axis_deadzone: 0.2
     invert_linear_x: false

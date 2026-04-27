@@ -3,7 +3,7 @@
 Paquete ROS 2 para teleoperar BlueBoat con mando publicando `geometry_msgs/msg/Twist`
 en `/cmd_vel`, pensado para encajar con la cadena:
 
-`/cmd_vel -> body_velocity_controller -> body_force_controller -> thrusters`
+`body_position_controller -> body_velocity_controller -> body_force_controller -> thrusters`
 
 ## Lanzamiento
 
@@ -42,7 +42,11 @@ En el perfil Logitech F310:
 
 - `RB + LB`: activar/desactivar modo fuerza directa (`body_force_controller`).
 - `RB + X`: activar/desactivar modo velocidad (`body_velocity_controller` encima de `body_force_controller`).
-- `B`: reservado para futuro control de posición.
+- `RB + A`: activar/desactivar modo posición (`body_position_controller` encima de `body_velocity_controller`).
 
 En modo velocidad, `body_force_controller` debe quedarse activo porque
 `body_velocity_controller` escribe sobre sus interfaces encadenadas.
+
+En modo posición, al activarlo desde el mando se publica primero un setpoint de
+"hold" con la pose/yaw actuales en `/body_position/setpoint`. Después puedes
+sobrescribir ese setpoint publicando `sura_msgs/msg/AuvControllerSetPoint`.

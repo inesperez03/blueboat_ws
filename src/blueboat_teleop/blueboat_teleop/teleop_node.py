@@ -6,6 +6,7 @@ from geometry_msgs.msg import Twist
 from rclpy.duration import Duration
 from rclpy.node import Node
 from sensor_msgs.msg import Joy
+from sura_msgs.msg import AuvControllerSetPoint, Navigator
 
 
 class BlueBoatTeleop(Node):
@@ -33,12 +34,16 @@ class BlueBoatTeleop(Node):
         self.declare_parameter('alternate_mode_modifier_button', -1)
         self.declare_parameter('body_force_button', 4)
         self.declare_parameter('body_velocity_button', 2)
+        self.declare_parameter('body_position_button', 0)
         self.declare_parameter('stop_controllers_button', -1)
 
         self.declare_parameter('controller_manager_name', '/controller_manager')
         self.declare_parameter('body_force_controller_name', 'body_force_controller')
         self.declare_parameter('body_velocity_controller_name', 'body_velocity_controller')
+        self.declare_parameter('body_position_controller_name', 'body_position_controller')
         self.declare_parameter('thruster_test_controller_name', 'thruster_test_controller')
+        self.declare_parameter('navigator_topic', '/navigator_msg')
+        self.declare_parameter('position_setpoint_topic', '/body_position/setpoint')
 
         self.declare_parameter('axis_deadzone', 0.1)
         self.declare_parameter('invert_linear_x', False)
@@ -69,6 +74,7 @@ class BlueBoatTeleop(Node):
             self.get_parameter('alternate_mode_modifier_button').value)
         self.body_force_button = int(self.get_parameter('body_force_button').value)
         self.body_velocity_button = int(self.get_parameter('body_velocity_button').value)
+        self.body_position_button = int(self.get_parameter('body_position_button').value)
         self.stop_controllers_button = int(
             self.get_parameter('stop_controllers_button').value)
 
@@ -78,18 +84,31 @@ class BlueBoatTeleop(Node):
             self.get_parameter('body_force_controller_name').value)
         self.body_velocity_controller_name = str(
             self.get_parameter('body_velocity_controller_name').value)
+        self.body_position_controller_name = str(
+            self.get_parameter('body_position_controller_name').value)
         self.thruster_test_controller_name = str(
             self.get_parameter('thruster_test_controller_name').value)
+        self.navigator_topic = str(self.get_parameter('navigator_topic').value)
+        self.position_setpoint_topic = str(
+            self.get_parameter('position_setpoint_topic').value)
 
         self.axis_deadzone = float(self.get_parameter('axis_deadzone').value)
         self.invert_linear_x = bool(self.get_parameter('invert_linear_x').value)
         self.invert_angular_z = bool(self.get_parameter('invert_angular_z').value)
 
         self.cmd_pub = self.create_publisher(Twist, self.cmd_vel_topic, 10)
+        self.position_setpoint_pub = self.create_publisher(
+            AuvControllerSetPoint, self.position_setpoint_topic, 10)
         self.joy_sub = self.create_subscription(
             Joy,
             self.joy_topic,
             self.joy_callback,
+            10,
+        )
+        self.navigator_sub = self.create_subscription(
+            Navigator,
+            self.navigator_topic,
+            self.navigator_callback,
             10,
         )
 
@@ -104,8 +123,10 @@ class BlueBoatTeleop(Node):
         self.active_mode = 'none'
         self.prev_force_combo_pressed = False
         self.prev_velocity_combo_pressed = False
+        self.prev_position_combo_pressed = False
         self.warned_waiting_for_joy = False
         self.pending_switch_steps = []
+        self.last_navigator_msg: Optional[Navigator] = None
 
         timer_period = 1.0 / self.publish_rate if self.publish_rate > 0.0 else 0.05
         self.timer = self.create_timer(timer_period, self.publish_command)
@@ -116,7 +137,12 @@ class BlueBoatTeleop(Node):
         self.get_logger().info(
             f'Mode switching on {switch_service}: RB+LB toggles {self.body_force_controller_name}, '
             f'RB+X toggles {self.body_velocity_controller_name} through '
-            f'{self.body_force_controller_name}')
+            f'{self.body_force_controller_name}, RB+A toggles '
+            f'{self.body_position_controller_name} through '
+            f'{self.body_velocity_controller_name}')
+
+    def navigator_callback(self, msg: Navigator) -> None:
+        self.last_navigator_msg = msg
 
     def joy_callback(self, msg: Joy) -> None:
         self.last_joy_msg = msg
@@ -134,6 +160,10 @@ class BlueBoatTeleop(Node):
             modifier_pressed and
             self.button_pressed(buttons, self.body_velocity_button)
         )
+        position_combo_pressed = (
+            modifier_pressed and
+            self.button_pressed(buttons, self.body_position_button)
+        )
         if force_combo_pressed and not self.prev_force_combo_pressed:
             if self.active_mode == 'force':
                 self.switch_mode(
@@ -143,6 +173,18 @@ class BlueBoatTeleop(Node):
                         self.thruster_test_controller_name,
                     ],
                     label='body force disabled',
+                    target_mode='none',
+                )
+            elif self.active_mode == 'position':
+                self.switch_mode(
+                    start=[],
+                    stop=[
+                        self.body_position_controller_name,
+                        self.body_velocity_controller_name,
+                        self.body_force_controller_name,
+                        self.thruster_test_controller_name,
+                    ],
+                    label='body position, velocity and force disabled',
                     target_mode='none',
                 )
             elif self.active_mode == 'velocity':
@@ -181,7 +223,10 @@ class BlueBoatTeleop(Node):
                 self.switch_mode_sequence([
                     {
                         'start': [self.body_force_controller_name],
-                        'stop': [self.thruster_test_controller_name],
+                        'stop': [
+                            self.body_position_controller_name,
+                            self.thruster_test_controller_name,
+                        ],
                         'label': 'body force prerequisite',
                         'target_mode': None,
                     },
@@ -192,15 +237,63 @@ class BlueBoatTeleop(Node):
                         'target_mode': 'velocity',
                     },
                 ])
+        elif position_combo_pressed and not self.prev_position_combo_pressed:
+            if self.active_mode == 'position':
+                self.switch_mode(
+                    start=[],
+                    stop=[self.body_position_controller_name],
+                    label='body position disabled',
+                    target_mode='velocity',
+                )
+            else:
+                if not self.publish_hold_setpoint():
+                    self.get_logger().warning(
+                        'Cannot enable body position mode without navigator feedback yet')
+                else:
+                    self.switch_mode_sequence([
+                        {
+                            'start': [self.body_force_controller_name],
+                            'stop': [self.thruster_test_controller_name],
+                            'label': 'body force prerequisite',
+                            'target_mode': None,
+                        },
+                        {
+                            'start': [self.body_velocity_controller_name],
+                            'stop': [],
+                            'label': 'body velocity prerequisite',
+                            'target_mode': None,
+                        },
+                        {
+                            'start': [self.body_position_controller_name],
+                            'stop': [],
+                            'label': 'body position',
+                            'target_mode': 'position',
+                        },
+                    ])
 
         self.prev_force_combo_pressed = force_combo_pressed
         self.prev_velocity_combo_pressed = velocity_combo_pressed
+        self.prev_position_combo_pressed = position_combo_pressed
 
     def mode_modifier_pressed(self, buttons: List[int]) -> bool:
         return (
             self.button_pressed(buttons, self.mode_modifier_button) or
             self.button_pressed(buttons, self.alternate_mode_modifier_button)
         )
+
+    def publish_hold_setpoint(self) -> bool:
+        if self.last_navigator_msg is None:
+            return False
+
+        setpoint = AuvControllerSetPoint()
+        setpoint.position.x = self.last_navigator_msg.position.position.x
+        setpoint.position.y = self.last_navigator_msg.position.position.y
+        setpoint.position.z = self.last_navigator_msg.position.position.z
+        setpoint.rpy.x = self.last_navigator_msg.rpy.x
+        setpoint.rpy.y = self.last_navigator_msg.rpy.y
+        setpoint.rpy.z = self.last_navigator_msg.rpy.z
+        self.position_setpoint_pub.publish(setpoint)
+        return True
 
     def switch_mode_sequence(self, steps: List[dict]) -> None:
         if self.pending_switch:

@@ -79,6 +79,13 @@ def generate_launch_description():
         output="screen"
     )
 
+    body_position_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["body_position_controller", "--inactive"],
+        output="screen"
+    )
+
     imu_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -101,6 +108,7 @@ def generate_launch_description():
         ros2_control_node,
         thruster_test_spawner,
         body_velocity_spawner,
+        body_position_spawner,
         imu_broadcaster_spawner,
         body_force_spawner
     ])

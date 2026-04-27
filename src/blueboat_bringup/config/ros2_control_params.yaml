@@ -16,6 +16,9 @@ controller_manager:
     body_velocity_controller:
       type: catamaran_controllers/BodyVelocityController
 
+    body_position_controller:
+      type: catamaran_controllers/BodyPositionController
+
     imu_broadcaster:
       type: imu_sensor_broadcaster/IMUSensorBroadcaster
 
@@ -43,21 +46,37 @@ body_velocity_controller:
     navigator_topic: /navigator_msg
     body_force_controller_name: body_force_controller
 
-    # Keep yaw untouched; surge is slightly less filtered now and the
-    # linear loop is tuned to avoid chasing the remaining lag.
-    kp_u: 180.0
-    ki_u: 2.0
-    kd_u: 24.0
-    integral_limit_u: 6.0
+    kp_u: 250.0
+    ki_u: 22.0
+    kd_u: 48.0
+    integral_limit_u: 14.0
 
-    kp_r: 260.0
-    ki_r: 20.0
-    kd_r: 38.0
-    integral_limit_r: 3.0
+    kp_r: 210.0
+    ki_r: 22.0
+    kd_r: 48.0
+    integral_limit_r: 10.0
+
+
+body_position_controller:
+  ros__parameters:
+    navigator_topic: /navigator_msg
+    setpoint_topic: /body_position/setpoint
+    body_velocity_controller_name: body_velocity_controller
+
+    kp_position: 0.45
+    kp_yaw: 0.5
+    max_linear_speed: 0.15
+    max_angular_speed: 0.2
+    position_hold_radius: 0.25
+    yaw_tolerance: 0.12
+    slow_down_radius: 2.00
+    heading_error_stop: 1.20
+    reverse_distance_threshold: 1.00
+    max_reverse_speed: 0.10
 
 navigator_bridge:
   ros__parameters:
-    linear_lpf_alpha: 0.35
+    linear_lpf_alpha: 0.50
 
 thrusters_system:
   ros__parameters:
