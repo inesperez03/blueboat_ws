@@ -22,3 +22,6 @@
 [submodule "src/sura_hardware_interface"]
 	path = src/sura_hardware_interface
 	url = https://github.com/inesperez03/sura_hardware_interface.git
+[submodule "src/blueboat_gcs"]
+	path = src/blueboat_gcs
+	url = https://github.com/Mariolopez31/blueboat_gcs.git
