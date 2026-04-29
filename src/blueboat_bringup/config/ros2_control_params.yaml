@@ -46,15 +46,15 @@ body_velocity_controller:
     navigator_topic: /navigator_msg
     body_force_controller_name: body_force_controller
 
-    kp_u: 250.0
-    ki_u: 22.0
-    kd_u: 48.0
-    integral_limit_u: 14.0
+    kp_u: 28.0
+    ki_u: 7.0
+    kd_u: 10.0
+    integral_limit_u: 8.0
 
-    kp_r: 210.0
-    ki_r: 22.0
-    kd_r: 48.0
-    integral_limit_r: 10.0
+    kp_r: 15.0
+    ki_r: 3.0
+    kd_r: 6.0
+    integral_limit_r: 6.0
 
 
 body_position_controller:
@@ -63,17 +63,35 @@ body_position_controller:
     setpoint_topic: /body_position/setpoint
     body_velocity_controller_name: body_velocity_controller
 
-    kp_position: 0.20
-    kp_yaw: 0.35
-    max_linear_speed: 0.2
-    max_angular_speed: 0.12
-    position_hold_radius: 0.25
+    # APPROACH
+    kp_position: 0.6
+    kp_yaw: 0.8
+    max_linear_speed: 0.20
+    max_angular_speed: 0.25
+
+    slow_down_radius: 1.2
+    heading_error_stop: 0.70
+
+    # Entrada/salida de hold con histéresis
+    position_hold_radius: 0.30
+    position_release_radius: 0.65
+
     yaw_tolerance: 0.12
-    slow_down_radius: 1.50
-    heading_error_stop: 1.20
-    reverse_distance_threshold: 1.00
-    max_reverse_speed: 0.04
+
+    reverse_distance_threshold: 1.0
+    max_reverse_speed: 0.0
+
     yaw_command_sign: -1.0
+
+    # HOLD
+    hold_position_deadband: 0.12
+    hold_yaw_deadband: 0.12
+
+    hold_kp_position: 0.25
+    hold_kp_yaw: 0.6
+
+    hold_max_linear_speed: 0.05
+    hold_max_angular_speed: 0.10
 
 navigator_bridge:
   ros__parameters:
