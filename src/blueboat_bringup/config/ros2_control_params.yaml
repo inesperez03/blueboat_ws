@@ -63,16 +63,17 @@ body_position_controller:
     setpoint_topic: /body_position/setpoint
     body_velocity_controller_name: body_velocity_controller
 
-    kp_position: 0.45
-    kp_yaw: 0.5
-    max_linear_speed: 0.15
-    max_angular_speed: 0.2
+    kp_position: 0.20
+    kp_yaw: 0.35
+    max_linear_speed: 0.2
+    max_angular_speed: 0.12
     position_hold_radius: 0.25
     yaw_tolerance: 0.12
-    slow_down_radius: 2.00
+    slow_down_radius: 1.50
     heading_error_stop: 1.20
     reverse_distance_threshold: 1.00
-    max_reverse_speed: 0.10
+    max_reverse_speed: 0.04
+    yaw_command_sign: -1.0
 
 navigator_bridge:
   ros__parameters:
