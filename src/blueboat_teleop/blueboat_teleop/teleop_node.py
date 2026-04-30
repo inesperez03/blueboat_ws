@@ -2,11 +2,11 @@ from typing import List, Optional
 
 import rclpy
 from controller_manager_msgs.srv import SwitchController
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import PoseStamped, Twist
 from rclpy.duration import Duration
 from rclpy.node import Node
 from sensor_msgs.msg import Joy
-from sura_msgs.msg import AuvControllerSetPoint, Navigator
+from sura_msgs.msg import Navigator
 
 
 class BlueBoatTeleop(Node):
@@ -98,7 +98,7 @@ class BlueBoatTeleop(Node):
 
         self.cmd_pub = self.create_publisher(Twist, self.cmd_vel_topic, 10)
         self.position_setpoint_pub = self.create_publisher(
-            AuvControllerSetPoint, self.position_setpoint_topic, 10)
+            PoseStamped, self.position_setpoint_topic, 10)
         self.joy_sub = self.create_subscription(
             Joy,
             self.joy_topic,
@@ -285,13 +285,10 @@ class BlueBoatTeleop(Node):
         if self.last_navigator_msg is None:
             return False
 
-        setpoint = AuvControllerSetPoint()
-        setpoint.position.x = self.last_navigator_msg.position.position.x
-        setpoint.position.y = self.last_navigator_msg.position.position.y
-        setpoint.position.z = self.last_navigator_msg.position.position.z
-        setpoint.rpy.x = self.last_navigator_msg.rpy.x
-        setpoint.rpy.y = self.last_navigator_msg.rpy.y
-        setpoint.rpy.z = self.last_navigator_msg.rpy.z
+        setpoint = PoseStamped()
+        setpoint.header.stamp = self.get_clock().now().to_msg()
+        setpoint.header.frame_id = 'map'
+        setpoint.pose = self.last_navigator_msg.position
         self.position_setpoint_pub.publish(setpoint)
         return True
 

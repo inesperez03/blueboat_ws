@@ -49,4 +49,4 @@ En modo velocidad, `body_force_controller` debe quedarse activo porque
 
 En modo posición, al activarlo desde el mando se publica primero un setpoint de
 "hold" con la pose/yaw actuales en `/body_position/setpoint`. Después puedes
-sobrescribir ese setpoint publicando `sura_msgs/msg/AuvControllerSetPoint`.
+sobrescribir ese setpoint publicando `geometry_msgs/msg/PoseStamped`.

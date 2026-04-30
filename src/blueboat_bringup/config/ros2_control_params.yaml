@@ -46,15 +46,15 @@ body_velocity_controller:
     navigator_topic: /navigator_msg
     body_force_controller_name: body_force_controller
 
-    kp_u: 28.0
-    ki_u: 7.0
-    kd_u: 10.0
-    integral_limit_u: 8.0
+    kp_u: 250.0
+    ki_u: 22.0
+    kd_u: 48.0
+    integral_limit_u: 14.0
 
-    kp_r: 15.0
-    ki_r: 3.0
-    kd_r: 6.0
-    integral_limit_r: 6.0
+    kp_r: 210.0
+    ki_r: 22.0
+    kd_r: 48.0
+    integral_limit_r: 10.0
 
 
 body_position_controller:
