@@ -1,0 +1,26 @@
+gps_node:
+  ros__parameters:
+    protocol: ubx
+    serial_port: /dev/ttyAMA5
+    baudrate: 230400
+    frame_id: gps_link
+    fix_topic: /sura/sensors/gps/fix
+
+gps_anchor_node:
+  ros__parameters:
+    gps_topic: /sura/sensors/gps/fix
+
+    world_frame: world_ned
+    fastlio_map_frame: map
+    base_frame: base_link_enu
+
+    origin_mode: manual
+    origin_latitude: 39.994335199497364
+    origin_longitude: -0.07400607762331379
+    origin_altitude: 0.0
+
+    map_frame_is_enu: true
+    yaw_offset_rad: 0.0
+
+    publish_path: true
+    max_path_size: 1000
