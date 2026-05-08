@@ -10,16 +10,18 @@ gps_anchor_node:
   ros__parameters:
     gps_topic: /sura/sensors/gps/fix
 
-    world_frame: world_ned
+    world_frame: world_enu
     fastlio_map_frame: map
-    base_frame: base_link_enu
+    base_frame: blueboat/base_link_enu
 
     origin_mode: manual
     origin_latitude: 39.994335199497364
     origin_longitude: -0.07400607762331379
     origin_altitude: 0.0
 
-    map_frame_is_enu: true
+    anchor_sample_count: 10
+    max_horizontal_accuracy_m: 20.0
+
     yaw_offset_rad: 0.0
 
     publish_path: true

@@ -22,8 +22,8 @@ controller_manager:
     imu_broadcaster:
       type: imu_sensor_broadcaster/IMUSensorBroadcaster
 
-    # magnetometer_broadcaster:
-    #   type: sura_sensors/MagnetometerBroadcaster
+    magnetometer_broadcaster:
+      type: sura_sensors/MagnetometerBroadcaster
 
 thruster_test_controller:
   ros__parameters:
@@ -46,15 +46,15 @@ body_velocity_controller:
     navigator_topic: /navigator_msg
     body_force_controller_name: body_force_controller
 
-    kp_u: 250.0
-    ki_u: 22.0
-    kd_u: 48.0
-    integral_limit_u: 14.0
+    kp_u: 28.0
+    ki_u: 7.0
+    kd_u: 10.0
+    integral_limit_u: 8.0
 
-    kp_r: 210.0
-    ki_r: 22.0
-    kd_r: 48.0
-    integral_limit_r: 10.0
+    kp_r: 25.0
+    ki_r: 3.0
+    kd_r: 6.0
+    integral_limit_r: 6.0
 
 
 body_position_controller:
@@ -106,8 +106,10 @@ imu_broadcaster:
     sensor_name: imu_sensor
     frame_id: blueboat/imu_link
 
-# magnetometer_broadcaster:
-#   ros__parameters:
-#     sensor_name: magnetometer_sensor
-#     frame_id: blueboat/imu_link
-#     topic_name: /magnetometer_broadcaster/mag
+magnetometer_broadcaster:
+  ros__parameters:
+    sensor_name: magnetometer_sensor
+    frame_id: blueboat/imu_link
+    topic_name: /magnetometer_broadcaster/mag
+    yaw_topic_name: /sura/sensors/gps/yaw_init
+    yaw_offset_rad: 0.0
