@@ -28,6 +28,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'status_light_feedback = blueboat_bringup.status_light_feedback:main',
         ],
     },
 )

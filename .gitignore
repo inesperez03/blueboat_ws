@@ -2,6 +2,8 @@ launch/
 install/
 log/
 build/
+bags/
+bags_raspberry/
 .vscode/
 .codex/
 install/core.*

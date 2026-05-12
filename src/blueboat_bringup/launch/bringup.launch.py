@@ -31,6 +31,9 @@ def generate_launch_description():
 
     enable_gps = LaunchConfiguration("enable_gps")
     enable_gps_anchor = LaunchConfiguration("enable_gps_anchor")
+    enable_diagnostics = LaunchConfiguration("enable_diagnostics")
+    enable_status_light = LaunchConfiguration("enable_status_light")
+    enable_world_enu_identity_tf = LaunchConfiguration("enable_world_enu_identity_tf")
     gps_params_file = LaunchConfiguration("gps_params_file")
 
     thruster_lpf_alpha_default = _load_thruster_lpf_alpha()
@@ -77,6 +80,28 @@ def generate_launch_description():
             "'", environment, "' == 'real' and '",
             enable_gps, "' == 'true' and '",
             enable_gps_anchor, "' == 'true'"
+        ])
+    )
+
+    real_and_diagnostics_enabled = IfCondition(
+        PythonExpression([
+            "'", environment, "' == 'real' and '",
+            enable_diagnostics, "' == 'true'"
+        ])
+    )
+
+    real_and_status_light_enabled = IfCondition(
+        PythonExpression([
+            "'", environment, "' == 'real' and '",
+            enable_status_light, "' == 'true'"
+        ])
+    )
+
+    world_enu_identity_enabled = IfCondition(
+        PythonExpression([
+            "'", enable_world_enu_identity_tf, "' == 'true' and not ('",
+            environment, "' == 'real' and '",
+            enable_gps_anchor, "' == 'true')"
         ])
     )
 
@@ -145,6 +170,90 @@ def generate_launch_description():
         output="screen"
     )
 
+    status_light_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["status_light_controller"],
+        output="screen",
+        condition=real_and_status_light_enabled
+    )
+
+    world_enu_identity_tf = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        name="world_enu_to_map_identity",
+        arguments=[
+            "0", "0", "0",
+            "0", "0", "0",
+            "world_enu", "map"
+        ],
+        output="screen",
+        condition=world_enu_identity_enabled
+    )
+
+    battery_diagnostics_node = Node(
+        package="sura_diagnostics",
+        executable="battery_status_diagnostics",
+        name="battery_status_diagnostics",
+        output="screen",
+        parameters=[{
+            "battery_topic": "/sura/sensors/battery",
+        }],
+        condition=real_and_diagnostics_enabled
+    )
+
+    gps_diagnostics_node = Node(
+        package="sura_diagnostics",
+        executable="gps_diagnostics",
+        name="gps_diagnostics",
+        output="screen",
+        parameters=[{
+            "sensor_topic": "/sura/sensors/gps/fix",
+            "frequency_topic": "/sura/sensors/gps/fix",
+        }],
+        condition=real_and_diagnostics_enabled
+    )
+
+    hardware_components_diagnostics_node = Node(
+        package="sura_diagnostics",
+        executable="hardware_components_diagnostics",
+        name="hardware_components_diagnostics",
+        output="screen",
+        parameters=[{
+            "list_hardware_components_service": "/controller_manager/list_hardware_components",
+            "component_names": ["SensorsSystem", "ThrustersSystem"],
+            "diagnostic_names": ["/Hardware/Sensors", "/Hardware/Thrusters"],
+        }],
+        condition=real_and_diagnostics_enabled
+    )
+
+    catamaran_navigation_diagnostics_node = Node(
+        package="sura_diagnostics",
+        executable="catamaran_navigation_diagnostics",
+        name="catamaran_navigation_diagnostics",
+        output="screen",
+        parameters=[{
+            "world_frame": "world_enu",
+            "position_frame": "blueboat/base_link_enu",
+            "center_x": 0.0,
+            "center_y": 0.0,
+            "max_radius": 20.0,
+            "radius_warning_margin": 2.0,
+        }],
+        condition=real_and_diagnostics_enabled
+    )
+
+    status_light_feedback_node = Node(
+        package="blueboat_bringup",
+        executable="status_light_feedback",
+        name="status_light_feedback",
+        output="screen",
+        parameters=[{
+            "diagnostics_topic": "/diagnostics",
+            "commands_topic": "/status_light_controller/commands",
+        }],
+        condition=real_and_status_light_enabled
+    )
 
     gps_anchor_node = Node(
         package="sura_sensors",
@@ -184,6 +293,21 @@ def generate_launch_description():
             description="Launch GPS anchor node when environment is real"
         ),
         DeclareLaunchArgument(
+            "enable_diagnostics",
+            default_value="true",
+            description="Launch robot-side diagnostics nodes when environment is real"
+        ),
+        DeclareLaunchArgument(
+            "enable_status_light",
+            default_value="true",
+            description="Launch the status light controller and feedback node when environment is real"
+        ),
+        DeclareLaunchArgument(
+            "enable_world_enu_identity_tf",
+            default_value="true",
+            description="Publish identity TF world_enu->map when GPS anchor is not active"
+        ),
+        DeclareLaunchArgument(
             "gps_params_file",
             default_value=default_gps_params_file,
             description="YAML file with GPS and GPS anchor parameters"
@@ -192,6 +316,7 @@ def generate_launch_description():
         thruster_lpf_alpha_env,
 
         ros2_control_node,
+        world_enu_identity_tf,
 
         thruster_test_spawner,
         body_force_spawner,
@@ -200,5 +325,11 @@ def generate_launch_description():
         imu_broadcaster_spawner,
         gps_broadcaster_spawner,
         battery_broadcaster_spawner,
+        status_light_controller_spawner,
+        battery_diagnostics_node,
+        gps_diagnostics_node,
+        hardware_components_diagnostics_node,
+        catamaran_navigation_diagnostics_node,
+        status_light_feedback_node,
         gps_anchor_node,
     ])

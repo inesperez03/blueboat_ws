@@ -6,9 +6,13 @@ controller_manager:
       inactive:
         - ThrustersSystem
       active:
+        - ActuatorsSystem
         - SensorsSystem
 
     thruster_test_controller:
+      type: forward_command_controller/ForwardCommandController
+
+    status_light_controller:
       type: forward_command_controller/ForwardCommandController
 
     body_force_controller:
@@ -38,6 +42,12 @@ thruster_test_controller:
       - blueboat/left_thruster_joint
       - blueboat/right_thruster_joint
     interface_name: effort
+
+status_light_controller:
+  ros__parameters:
+    joints:
+      - blueboat/status_light_joint
+    interface_name: enabled
 
 body_force_controller:
   ros__parameters:
@@ -133,4 +143,3 @@ battery_broadcaster:
     sensor_name: battery_sensor
     frame_id: blueboat/base_link
     topic_name: /sura/sensors/battery
-
