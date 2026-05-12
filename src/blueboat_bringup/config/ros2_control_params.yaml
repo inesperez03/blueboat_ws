@@ -5,6 +5,7 @@ controller_manager:
     hardware_components_initial_state:
       inactive:
         - ThrustersSystem
+      active:
         - SensorsSystem
 
     thruster_test_controller:
@@ -27,6 +28,9 @@ controller_manager:
 
     gps_broadcaster:
       type: sura_sensors/GpsBroadcaster
+
+    battery_broadcaster:
+      type: sura_sensors/BatteryBroadcaster
 
 thruster_test_controller:
   ros__parameters:
@@ -123,3 +127,10 @@ gps_broadcaster:
     frame_id: gps_frame
     topic_name: /sura/sensors/gps/fix
     position_covariance: 0.0
+
+battery_broadcaster:
+  ros__parameters:
+    sensor_name: battery_sensor
+    frame_id: blueboat/base_link
+    topic_name: /sura/sensors/battery
+

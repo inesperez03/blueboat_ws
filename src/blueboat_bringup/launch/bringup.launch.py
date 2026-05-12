@@ -138,6 +138,14 @@ def generate_launch_description():
         condition=gps_enabled
     )
 
+    battery_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["battery_broadcaster"],
+        output="screen"
+    )
+
+
     gps_anchor_node = Node(
         package="sura_sensors",
         executable="gps_anchor_node",
@@ -191,6 +199,6 @@ def generate_launch_description():
         body_position_spawner,
         imu_broadcaster_spawner,
         gps_broadcaster_spawner,
-
+        battery_broadcaster_spawner,
         gps_anchor_node,
     ])
