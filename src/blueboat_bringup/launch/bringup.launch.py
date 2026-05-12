@@ -66,10 +66,9 @@ def generate_launch_description():
         " lookup_csv:=", lookup_csv
     ])
 
-    real_and_gps_enabled = IfCondition(
+    gps_enabled = IfCondition(
         PythonExpression([
-            "'", environment, "' == 'real' and '",
-            enable_gps, "' == 'true'"
+            "'", enable_gps, "' == 'true'"
         ])
     )
 
@@ -131,15 +130,12 @@ def generate_launch_description():
         output="screen"
     )
 
-    gps_node = Node(
-        package="sura_sensors",
-        executable="gps_node",
-        name="gps_node",
+    gps_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["gps_broadcaster"],
         output="screen",
-        parameters=[
-            gps_params_file
-        ],
-        condition=real_and_gps_enabled
+        condition=gps_enabled
     )
 
     gps_anchor_node = Node(
@@ -172,7 +168,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "enable_gps",
             default_value="true",
-            description="Launch GPS node when environment is real"
+            description="Spawn the GPS broadcaster"
         ),
         DeclareLaunchArgument(
             "enable_gps_anchor",
@@ -194,7 +190,7 @@ def generate_launch_description():
         body_velocity_spawner,
         body_position_spawner,
         imu_broadcaster_spawner,
+        gps_broadcaster_spawner,
 
-        gps_node,
         gps_anchor_node,
     ])

@@ -25,6 +25,9 @@ controller_manager:
     magnetometer_broadcaster:
       type: sura_sensors/MagnetometerBroadcaster
 
+    gps_broadcaster:
+      type: sura_sensors/GpsBroadcaster
+
 thruster_test_controller:
   ros__parameters:
     joints:
@@ -113,3 +116,10 @@ magnetometer_broadcaster:
     topic_name: /magnetometer_broadcaster/mag
     yaw_topic_name: /sura/sensors/gps/yaw_init
     yaw_offset_rad: 0.0
+
+gps_broadcaster:
+  ros__parameters:
+    sensor_name: gps_sensor
+    frame_id: gps_frame
+    topic_name: /sura/sensors/gps/fix
+    position_covariance: 0.0
