@@ -2,6 +2,7 @@ blueboat_teleop:
   ros__parameters:
     joy_topic: /joy
     cmd_vel_topic: /cmd_vel
+    body_force_topic: /body_force/command
 
     publish_rate: 20.0
     command_timeout: 0.5
@@ -13,6 +14,13 @@ blueboat_teleop:
     scale_angular_z: 0.5
     turbo_scale_linear_x: 0.5
     turbo_scale_angular_z: 0.5
+    scale_force_x: 12.0
+    scale_torque_z: 3.0
+    turbo_scale_force_x: 18.0
+    turbo_scale_torque_z: 4.5
+    force_filter_alpha: 0.25
+    max_force_rate_x: 24.0
+    max_torque_rate_z: 6.0
 
     enable_button: 5
     turbo_button: -1
