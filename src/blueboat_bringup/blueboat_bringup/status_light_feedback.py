@@ -68,7 +68,15 @@ class StatusLightFeedback(Node):
         now = self.get_clock().now()
         for status in msg.status:
             if self._is_relevant(status.name):
-                self._status_levels[status.name] = int(status.level)
+                level = self._normalize_level(status.level)
+                if level is None:
+                    self.get_logger().warning(
+                        f"Ignoring diagnostic status with unsupported level type: "
+                        f"name={status.name} type={type(status.level).__name__} "
+                        f"value={status.level!r}"
+                    )
+                    continue
+                self._status_levels[status.name] = level
                 self._status_times[status.name] = now
 
     def _is_relevant(self, name: str) -> bool:
@@ -106,6 +114,16 @@ class StatusLightFeedback(Node):
             return True
         phase = self.get_clock().now().nanoseconds / 1e9
         return math.fmod(phase, period) < (period / 2.0)
+
+    def _normalize_level(self, level) -> int | None:
+        if isinstance(level, int):
+            return level
+        if isinstance(level, (bytes, bytearray, memoryview)):
+            level_bytes = bytes(level)
+            if len(level_bytes) == 1:
+                return int.from_bytes(level_bytes, "little")
+            return None
+        return None
 
     def _publish_light_command(self) -> None:
         state = self._compute_state()
