@@ -28,3 +28,6 @@
 [submodule "src/livox2_to_pc2"]
 	path = src/livox2_to_pc2
 	url = https://github.com/Mariolopez31/livox2_to_pc2.git
+[submodule "src/sura_diagnostics"]
+	path = src/sura_diagnostics
+	url = https://github.com/slopezba/sura_diagnostics.git

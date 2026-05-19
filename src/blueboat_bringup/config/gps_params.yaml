@@ -9,9 +9,11 @@ gps_node:
 gps_anchor_node:
   ros__parameters:
     gps_topic: /sura/sensors/gps/fix
+    yaw_topic: /sura/sensors/gps/yaw_init
 
     world_frame: world_enu
     fastlio_map_frame: map
+    position_frame: gps_frame
     base_frame: blueboat/base_link_enu
 
     origin_mode: manual
@@ -22,6 +24,13 @@ gps_anchor_node:
     anchor_sample_count: 10
     max_horizontal_accuracy_m: 20.0
 
+    # Fixed yaw of world_frame relative to geographic ENU.
+    # 0.0 rad means world_frame x points East.
+    world_frame_yaw_rad: 0.0
+    # If true, ignore yaw_topic and use this robot yaw wrt East for the initial anchor.
+    use_manual_base_yaw: false
+    manual_base_yaw_east_rad: 0.0
+    # Additional calibration offset for the yaw source.
     yaw_offset_rad: 0.0
 
     publish_path: true
