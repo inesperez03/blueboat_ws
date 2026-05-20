@@ -4,10 +4,10 @@ controller_manager:
 
     hardware_components_initial_state:
       inactive:
-        - ThrustersSystem
-      active:
-        - ActuatorsSystem
         - SensorsSystem
+        - ActuatorsSystem
+      active:
+        - ThrustersSystem
 
     thruster_test_controller:
       type: forward_command_controller/ForwardCommandController
@@ -63,12 +63,12 @@ body_velocity_controller:
     navigator_topic: /navigator_msg
     body_force_controller_name: body_force_controller
 
-    kp_u: 28.0
-    ki_u: 7.0
-    kd_u: 10.0
+    kp_u: 24.0
+    ki_u: 6.0
+    kd_u: 16.0
     integral_limit_u: 8.0
 
-    kp_r: 25.0
+    kp_r: 22.0
     ki_r: 3.0
     kd_r: 6.0
     integral_limit_r: 6.0

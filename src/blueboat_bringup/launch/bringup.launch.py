@@ -31,7 +31,6 @@ def generate_launch_description():
 
     enable_gps = LaunchConfiguration("enable_gps")
     enable_gps_anchor = LaunchConfiguration("enable_gps_anchor")
-    enable_battery = LaunchConfiguration("enable_battery")
     enable_diagnostics = LaunchConfiguration("enable_diagnostics")
     enable_status_light = LaunchConfiguration("enable_status_light")
     enable_world_enu_identity_tf = LaunchConfiguration("enable_world_enu_identity_tf")
@@ -67,9 +66,7 @@ def generate_launch_description():
         "xacro ",
         xacro_file,
         " environment:=", environment,
-        " lookup_csv:=", lookup_csv,
-        " enable_battery:=", enable_battery,
-        " enable_status_light:=", enable_status_light
+        " lookup_csv:=", lookup_csv
     ])
 
     gps_enabled = IfCondition(
@@ -90,20 +87,6 @@ def generate_launch_description():
         PythonExpression([
             "'", environment, "' == 'real' and '",
             enable_diagnostics, "' == 'true'"
-        ])
-    )
-
-    battery_enabled = IfCondition(
-        PythonExpression([
-            "'", enable_battery, "' == 'true'"
-        ])
-    )
-
-    real_diagnostics_and_battery_enabled = IfCondition(
-        PythonExpression([
-            "'", environment, "' == 'real' and '",
-            enable_diagnostics, "' == 'true' and '",
-            enable_battery, "' == 'true'"
         ])
     )
 
@@ -184,8 +167,7 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=["battery_broadcaster"],
-        output="screen",
-        condition=battery_enabled
+        output="screen"
     )
 
     status_light_controller_spawner = Node(
@@ -217,7 +199,7 @@ def generate_launch_description():
         parameters=[{
             "battery_topic": "/sura/sensors/battery",
         }],
-        condition=real_diagnostics_and_battery_enabled
+        condition=real_and_diagnostics_enabled
     )
 
     gps_diagnostics_node = Node(
@@ -309,11 +291,6 @@ def generate_launch_description():
             "enable_gps_anchor",
             default_value="false",
             description="Launch GPS anchor node when environment is real"
-        ),
-        DeclareLaunchArgument(
-            "enable_battery",
-            default_value="true",
-            description="Expose and read the Navigator battery ADC through SensorsSystem"
         ),
         DeclareLaunchArgument(
             "enable_diagnostics",
